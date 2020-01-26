@@ -146,6 +146,22 @@ public:
 
             expect (t["testkey"] == var());
         }
+
+        beginTest ("copy CachedValue object");
+        {
+            ValueTree t ("root");
+            t.setProperty ("testkey", "oldvalue", nullptr);
+
+            CachedValue<String> cv1 (t, "testkey", nullptr, "defaultvalue1");
+            expect (cv1 == "oldvalue");
+
+            CachedValue<String> cv2 (cv1);
+            expect (cv2 == "oldvalue");
+
+            t.setProperty ("testkey", "newvalue", nullptr);
+            expect (cv1 == "newvalue");
+            expect (cv2 == "newvalue");
+        }
     }
 };
 

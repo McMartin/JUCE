@@ -92,6 +92,9 @@ public:
     CachedValue (ValueTree& tree, const Identifier& propertyID,
                  UndoManager* undoManager, const Type& defaultToUse);
 
+    /** Copy constructor. */
+    CachedValue (const CachedValue& other);
+
     //==============================================================================
     /** Returns the current value of the property. If the property does not exist,
         returns the fallback default value.
@@ -197,10 +200,6 @@ private:
     Type getTypedValue() const;
 
     void valueTreePropertyChanged (ValueTree& changedTree, const Identifier& changedProperty) override;
-
-    //==============================================================================
-    JUCE_DECLARE_WEAK_REFERENCEABLE (CachedValue)
-    JUCE_DECLARE_NON_COPYABLE (CachedValue)
 };
 
 
@@ -220,6 +219,14 @@ template <typename Type>
 inline CachedValue<Type>::CachedValue (ValueTree& v, const Identifier& i, UndoManager* um, const Type& defaultToUse)
     : targetTree (v), targetProperty (i), undoManager (um),
       defaultValue (defaultToUse), cachedValue (getTypedValue())
+{
+    targetTree.addListener (this);
+}
+
+template <typename Type>
+inline CachedValue<Type>::CachedValue (const CachedValue& other)
+    : targetTree (other.targetTree), targetProperty (other.targetProperty), undoManager (other.undoManager),
+      defaultValue (other.defaultValue), cachedValue (other.cachedValue)
 {
     targetTree.addListener (this);
 }
